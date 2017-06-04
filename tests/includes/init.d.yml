@@ -1,0 +1,4 @@
+---
+# file:
+#   '/init.d.nonexistent':
+#     exists: true

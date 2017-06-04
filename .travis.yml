@@ -1,0 +1,41 @@
+---
+dist: trusty
+sudo: required
+
+matrix:
+  fast_finish: true
+
+services:
+  - docker
+
+env:
+  global: # applied to every run
+    container_env_term: xterm
+    container_env_lang: en_US.UTF-8
+    container_user: vagrant
+    role_name: time
+
+  matrix: # each entry is its own run
+    - { image: "naftulikay/centos-vm:7", systemd: true }
+    - { image: "naftulikay/xenial-vm:latest", systemd: true }
+    - { image: "naftulikay/trusty-vm:latest", systemd: false }
+
+
+before_install:
+  # display docker versioning information
+  - docker --version
+  # fetch the image
+  - tests/runc start ${image} ${systemd}
+  # echo ansible version
+  - tests/runc exec ansible --version
+
+install:
+  # fetch test dependencies
+  - tests/runc exec ansible-galaxy install -r /etc/ansible/roles/${role_name}/tests/requirements.yml
+
+script:
+  # evaluate defaults
+  - tests/runc exec ansible-playbook /etc/ansible/roles/${role_name}/tests/playbook.yml
+
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/

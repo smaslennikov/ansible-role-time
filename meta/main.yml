@@ -1,0 +1,26 @@
+---
+galaxy_info:
+  name: time
+  version: 'v0.0.0'
+  author: Naftuli Kay
+  description: Configure time synchronization on a machine.
+
+  license: MIT
+
+  min_ansible_version: 2.2
+
+  platforms:
+    - name: EL
+      versions:
+        - 7
+    - name: Ubuntu
+      versions:
+        - trusty
+        - xenial
+
+  galaxy_tags:
+    - time
+    - ntp
+    - timesyncd
+
+dependencies: []

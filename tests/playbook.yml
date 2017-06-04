@@ -1,0 +1,23 @@
+---
+- name: setup
+  hosts: localhost
+  vars:
+    container_user: vagrant
+  tasks:
+    - name: create user
+      user: name={{ container_user }} comment="Container User" state=present
+
+- name: build
+  hosts: localhost
+  roles:
+    - role: time
+
+- name: test
+  hosts: localhost
+  roles:
+    - role: degoss
+      goss_file: goss/goss.yml
+      goss_addtl_dirs: [goss/includes/]
+      goss_env_vars:
+        distro: "{{ ansible_distribution | lower }}"
+        init: "{{ ansible_service_manager }}"

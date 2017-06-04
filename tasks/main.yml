@@ -1,0 +1,8 @@
+---
+# load variables per distro/version
+- name: load per-distribution variables
+  include_vars: "{{ per_distro_vars }}"
+  with_items:
+    - "distro/{{ ansible_distribution | lower }}/common.yml"
+    - "distro/{{ ansible_distribution | lower }}/{{ ansible_distribution | lower }}{{ ansible_distribution_version.split('.') | first | lower }}.yml"
+  loop_control: { loop_var: per_distro_vars }
