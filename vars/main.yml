@@ -1,1 +1,72 @@
 ---
+time_ntp_servers: []
+time_ntp_fallback_servers:
+  - 0.pool.ntp.org
+  - 1.pool.ntp.org
+  - 2.pool.ntp.org
+  - 3.pool.ntp.org
+
+time_ntp_drift_file: /var/lib/ntp/drift
+time_ntp_disable_monitor: true
+time_ntp_restrict:
+  - restrict default nomodify notrap nopeer noquery
+  - restrict 127.0.0.1
+  - restrict ::1
+
+time_service_name: ntp
+time_service_conf_file: /etc/ntp.conf
+time_service_conf_template: ntp.conf.j2
+
+# packages to install for time sync, usually just ntp or empty
+time_sync_packages: [ntp]
+
+# disable force sync by default
+time_force_sync: false
+
+# configuration and internal layout
+time:
+  distributions:
+    centos:
+      shorthand: rhel
+      releases:
+        "7": rhel7
+    redhat:
+      shorthand: rhel
+      releases:
+        "7": rhel7
+
+    ubuntu:
+      shorthand: ubuntu
+      releases:
+        "14.04": trusty
+        "16.04": xenial
+
+_time:
+  os:
+    # results: rhel, ubuntu, unknown
+    distro: |-
+      {%- set distro = time.distributions.get(ansible_distribution | lower) -%}
+      {%- if not distro -%}
+        unknown
+      {%- else -%}
+        {{ distro.shorthand }}
+      {%- endif -%}
+
+    # results: rhel7, trusty, xenial, unknown
+    release: |-
+      {%- set distro = time.distributions[ansible_distribution | lower] -%}
+      {%- if ansible_os_family | lower == "redhat" -%}
+      {%-   set key = ansible_distribution_major_version -%}
+      {%- else -%}
+      {%-   set key = ansible_distribution_version -%}
+      {%- endif -%}
+      {%- set release = distro.releases.get(key) -%}
+      {{ release | default('unknown') }}
+
+    # results: systemd, cron
+    scheduler: |-
+        {%- if ansible_service_mgr == "systemd" -%}
+          systemd
+        {%- else -%}
+          cron
+        {%- endif -%}

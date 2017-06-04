@@ -41,9 +41,3 @@
         name: docker
         state: started
         enabled: true
-
-# - name: run roles
-#   hosts: all
-#   become: true
-#   roles:
-#     - role: vagrant-base

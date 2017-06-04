@@ -1,0 +1,9 @@
+---
+# vars/distro/ubuntu/common.yml: common variables to all ubuntu releases
+time_ntp_servers:
+  - 0.ubuntu.pool.ntp.org
+  - 1.ubuntu.pool.ntp.org
+  - 2.ubuntu.pool.ntp.org
+  - 3.ubuntu.pool.ntp.org
+
+time_ntp_drift_file: /var/lib/ntp/ntp.drift

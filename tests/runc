@@ -6,6 +6,15 @@ FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 : ${LOGGING_LEVEL="info"}
 
+: ${container_env_term="xterm"}
+: ${container_env_lang="en_US.UTF-8"}
+: ${container_env_ansible_force_color="true"}
+
+export \
+  container_env_term \
+  container_env_lang \
+  container_env_ansible_force_color
+
 declare -a LOGGING_LEVELS
 LOGGING_LEVELS=("trace" "debug" "info" "warn" "error" "silent")
 
@@ -195,9 +204,7 @@ function .get-container-id() {
 function .yaml2json() {
   local yml_file="$1"
 
-  # load a file as yaml, dump as json
-  python -c 'import json as j, sys as s, yaml as y; print(j.dumps(y.load(open(s.argv[1], "r").read()), indent=2))' \
-    $yml_file
+  $FILE_DIR/yaml2json $yml_file
 }
 
 # General Usage
@@ -328,7 +335,7 @@ function .exec() {
   done
 
   .info "Executing command \"${env_variables} ${command[*]}\" in container ${container_id}"
-  docker exec $(test ! -z "${interactive}" && echo '-i') --tty ${container_id} ${env_variables} ${command} ${args[@]}
+  exec docker exec $(test ! -z "${interactive}" && echo '-i --tty') ${container_id} ${env_variables} ${command} ${args[@]}
 }
 
 # Stop Command
@@ -407,6 +414,10 @@ function .status() {
   return 0
 }
 
+function .get-role-name() {
+  .yaml2json "$FILE_DIR/../meta/main.yml" | jq -r '.galaxy_info.name'
+}
+
 # Main Entrypoint
 function .main() {
   if [ $# -eq 0 ]; then
@@ -414,7 +425,12 @@ function .main() {
   fi
 
   # set this if it's undefined
-  export role_name="${role_name:-$(.yaml2json "$FILE_DIR/../meta/main.yml" | jq -r '.galaxy_info.name')}"
+  export role_name="${role_name:-$(.get-role-name)}"
+
+  if [ -z "${role_name}" ]; then
+    .error "Unable to detect role name."
+    return 1
+  fi
 
   while [ $# -gt 0 ]; do
     case $1 in
@@ -436,6 +452,11 @@ function .main() {
       status)
         shift
         .status "$@"
+        break
+        ;;
+      get-role-name)
+        shift
+        echo $role_name
         break
         ;;
       *)

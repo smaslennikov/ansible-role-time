@@ -1,0 +1,2 @@
+---
+# vars/scheduler/systemd.yml: variables for using systemd as a task scheduler
