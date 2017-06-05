@@ -1,0 +1,5 @@
+---
+gossfile:
+  'includes/common.yml': {}
+  # test cases for time_force_sync enabled/disabled
+  'includes/force-sync/{{.Env.force_sync}}.yml': {}

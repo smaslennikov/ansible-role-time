@@ -10,8 +10,6 @@ services:
 
 env:
   global: # applied to every run
-    container_env_term: xterm
-    container_env_lang: en_US.UTF-8
     container_user: vagrant
     role_name: time
 

@@ -1,8 +1,31 @@
 ---
-# load variables per distro/version
-- name: load per-distribution variables
-  include_vars: "{{ per_distro_vars }}"
+# load variables per distribution
+- name: load variables
+  include_vars: "{{ vars_list }}"
   with_items:
-    - "distro/{{ ansible_distribution | lower }}/common.yml"
-    - "distro/{{ ansible_distribution | lower }}/{{ ansible_distribution | lower }}{{ ansible_distribution_version.split('.') | first | lower }}.yml"
-  loop_control: { loop_var: per_distro_vars }
+    # 1. distribution: least to greatest specificity
+    - "distro/common.yml"
+    - "distro/{{ _time.os.distro }}/common.yml"
+    - "distro/{{ _time.os.distro }}/{{ _time.os.release }}.yml"
+    # 2. scheduler: least to greatest specificity
+    - "scheduler/common.yml"
+    - "scheduler/{{ _time.os.scheduler }}.yml"
+  loop_control: { loop_var: vars_list }
+
+# reload apt cache if it's more than an hour old and we're on a debian system
+- name: reload apt cache
+  apt: update_cache=true cache_valid_time=3600
+  when: ansible_os_family | lower == "debian"
+
+  # include per-distro tasks
+- name: compile tasks
+  include: "{{ task_list }}"
+  with_items:
+    # 1. distribution: least to greatest specificity
+    - "distro/common.yml"
+    - "distro/{{ _time.os.distro }}/common.yml"
+    - "distro/{{ _time.os.distro }}/{{ _time.os.release }}.yml"
+    # 2. scheduler: least to greatest specificity
+    - "scheduler/common.yml"
+    - "scheduler/{{ _time.os.scheduler }}.yml"
+  loop_control: { loop_var: task_list }

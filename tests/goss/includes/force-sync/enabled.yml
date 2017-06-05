@@ -1,0 +1,10 @@
+---
+file:
+{{ if eq .Env.time_service "ntp" }}
+  '/etc/cron.d/time-sync':
+    exists: true
+    owner: root
+    group: root
+    contains:
+      - "sntp -s"
+{{ end }}

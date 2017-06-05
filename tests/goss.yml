@@ -1,8 +1,0 @@
----
-gossfile:
-  'includes/common.yml': {}
-{{ if eq .Env.init "systemd" }}
-  'includes/systemd.yml': {}
-{{- else -}}
-  'includes/init.d.yml': {}
-{{ end }}
