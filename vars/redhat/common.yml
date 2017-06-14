@@ -1,6 +1,6 @@
 ---
 # vars/distro/rhel/common.yml: common variables to all RHEL releases
-time_service_name: ntpd
+time_ntp_service_name: ntpd
 time_sync_packages: [ntp, sntp]
 
 time_ntp_servers:

@@ -1,0 +1,7 @@
+---
+gossfile:
+{{ if eq .Env.time_service "timesyncd" }}
+  'goss.d/timesyncd.yml': {}
+{{ else }}
+  'goss.d/ntp.yml': {}
+{{ end }}

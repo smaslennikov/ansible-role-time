@@ -1,0 +1,5 @@
+---
+# vars/distro/ubuntu/xenial.yml: variables for xenial
+time_sync_packages: []
+# xenial does not support this
+time_force_sync_allowed: false

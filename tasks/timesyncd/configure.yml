@@ -1,0 +1,10 @@
+---
+- name: render timesyncd.conf
+  template:
+    src: "{{ time_timesyncd_conf_template | default('timesyncd.conf.j2') }}"
+    dest: "{{ time_timesyncd_conf_file | default('/etc/systemd/timesyncd.conf') }}"
+    owner: root
+    group: root
+    mode: 0644
+  # unfortunately no validation program
+  notify: restart timesyncd

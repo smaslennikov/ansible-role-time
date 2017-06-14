@@ -1,0 +1,19 @@
+---
+- name: detect timesyncd
+  shell: systemctl list-units | awk '{print $1;}' | grep -qP 'systemd-timesyncd'
+  changed_when: false
+  failed_when: false
+  register: timesyncd_result
+  when: systemd|bool
+
+- name: detect whether to use timesyncd
+  set_fact: timesyncd="{{ (timesyncd_result is defined and timesyncd_result.get('rc') == 0) | bool }}"
+
+- name: detect time service
+  set_fact:
+    time_service_name: |-
+      {% if timesyncd|bool -%}
+        {{ time_timesyncd_service_name}}
+      {%- else -%}
+        {{ time_ntp_service_name }}
+      {%- endif %}

@@ -1,5 +1,4 @@
 ---
-# vars/distro/ubuntu/common.yml: common variables to all ubuntu releases
 time_ntp_servers:
   - 0.ubuntu.pool.ntp.org
   - 1.ubuntu.pool.ntp.org
