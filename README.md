@@ -1,6 +1,8 @@
 # ansible-role-time [![Build Status][img-build-status]][build-status]
 
-Installs and configures time synchronization on a machine using `ntpd` or `timesyncd`.
+Installs and configures time synchronization on a machine using `ntpd` or `systemd-timesyncd`. This role is targeted at
+providing a time _client_ to keep time in sync with other servers; as opposed to installing and configuring `ntpd` as an
+actual time server for others to use.
 
 Available on Ansible Galaxy at [`naftulikay.time`][galaxy].
 
@@ -11,16 +13,8 @@ timesyncd or ntp to synchronize the time.
 
 ## Role Variables
 
-Please tour `vars/main.yml` and `defaults/main.yml` for a view into other variables, if any.
-
-<dl>
-  <dt><code>time_ntp_servers</code></dt>
-  <dd></dd>
-  <dt><code>time_ntp_fallback_servers</code></dt>
-  <dd></dd>
-  <dt><code>time_force_sync_interval</code></dt>
-  <dd></dd>
-</dl>
+For now, none are applicable and all may be overwritten at runtime. Later refactoring may make specifying custom NTP
+and fallback NTP servers possible.
 
 ## Dependencies
 
@@ -32,7 +26,7 @@ Here are some example playbooks to get started with.
 
 ### Defaults
 
-Lorem ipsum.
+Simply get that time syncing.
 
 ```yaml
 ---
