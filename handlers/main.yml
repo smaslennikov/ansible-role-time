@@ -1,3 +1,6 @@
 ---
-- name: restart time synchronization service
-  service: name={{ time_service_name }} state=restarted
+- name: restart ntp
+  service: name={{ time_ntp_service_name }} state=restarted
+
+- name: restart timesyncd
+  service: name={{ time_timesyncd_service_name }} state=restarted

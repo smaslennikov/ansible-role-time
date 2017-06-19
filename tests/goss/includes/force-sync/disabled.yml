@@ -1,4 +1,0 @@
----
-file:
-  '/etc/cron.d/time-sync':
-    exists: false

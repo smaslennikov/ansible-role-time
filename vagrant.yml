@@ -5,6 +5,9 @@
   vars:
     role_name: vagrant-base
   tasks:
+    - name: be an adult
+      selinux: state=enforcing policy=targeted
+
     - name: create ansible directories
       file: path={{ item }} state=directory owner=root group=root mode=0755
       with_items:

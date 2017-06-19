@@ -1,0 +1,5 @@
+---
+- name: establish whether systemd
+  set_fact:
+    systemd: |-
+      {{ ansible_service_mgr == "systemd" }}

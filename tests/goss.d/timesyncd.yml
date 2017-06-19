@@ -1,0 +1,15 @@
+---
+service:
+  'systemd-timesyncd':
+    enabled: true
+    running: true
+
+file:
+  '/etc/systemd/timesyncd.conf':
+    exists: true
+    contains:
+      - '/^\[Time\]\s*$/'
+      # there must be active ntp servers defined
+      - '/^NTP=\s*\w+/'
+      # there must be active fallback servers defined
+      - '/^FallbackNTP=\s*\w+/'

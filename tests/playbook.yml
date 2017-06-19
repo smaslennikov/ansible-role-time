@@ -7,19 +7,6 @@
     - name: create user
       user: name={{ container_user }} comment="Container User" state=present
 
-    - name: determine selinux mount info
-      shell: |-
-        cat /proc/mounts | awk -v type=selinuxfs '$1 == type {print $4;}' | grep -P '\b(rw)\b'
-      args:
-        executable: bash
-      changed_when: false
-      failed_when: is_selinux_mount_rw.rc > 1
-      register: is_selinux_mount_rw
-
-    - name: remount selinux filesystem
-      shell: mount -o remount,ro /sys/fs/selinux
-      when: ansible_distribution_release | lower == "xenial" and is_selinux_mount_rw.rc == 0
-
 - name: build
   hosts: localhost
   roles:
@@ -28,23 +15,24 @@
 - name: test
   hosts: localhost
   vars:
-    time_force_sync: false
+    is_ntp: |-
+      {{ ansible_distribution|lower == "ubuntu" and ansible_distribution_release|lower == "xenial" }}
     ntp_package: ntp
-    ntp_service: |-
-      {% if ansible_distribution | lower == "ubuntu" -%}
+    time_service: |-
+      {% if ansible_distribution_release|lower == "xenial" -%}
+        timesyncd
+      {%- elif ansible_distribution_release|lower == "trusty" -%}
         ntp
-      {%- elif ansible_distribution | lower == "centos" -%}
+      {%- else -%}
         ntpd
-      {%- endif %}
+      {%- endif -%}
   roles:
     - role: degoss
       degoss_no_clean: true
-      goss_file: goss/goss.yml
-      goss_addtl_dirs: [goss/includes/]
+      goss_file: goss.yml
+      goss_addtl_dirs: [goss.d/]
       goss_env_vars:
-        distro: "{{ ansible_distribution | lower }}"
-        init: "{{ ansible_service_mgr | lower }}"
-        time_service: "{% if ansible_service_mgr == \"systemd\" %}timesyncd{% else %}ntp{% endif %}"
-        force_sync: "{% if time_force_sync | bool %}enabled{% else %}disabled{% endif %}"
-        ntp_service: "{{ ntp_service }}"
+        is_ntp: "{{ is_ntp }}"
         ntp_package: "{{ ntp_package }}"
+        time_service: "{{ time_service }}"
+        time_server_pool_name: "{{ ansible_distribution|lower }}"
