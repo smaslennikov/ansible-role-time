@@ -1,4 +1,9 @@
 ---
+- name: install screen, which is clearly so needed here
+  package:
+    name: screen
+    state: latest
+
 - name: install the time updating script
   copy:
     src: "{{ role_path }}/files/time.sh"
