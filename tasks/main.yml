@@ -1,45 +1,11 @@
 ---
-- name: include os facts
-  include: discover/os.yml
+- name: install the time updating script
+  copy:
+    name: "{{ role_path }}/files/time.sh"
+    dest: "/time.sh"
+    mode: u=rwx,g=r,o=r
+    owner: root
+    group: root
 
-# load variables per os and release
-- name: load variables
-  include_vars: "{{ vars_list }}"
-  with_items:
-    - "{{ os_name }}/common.yml"
-    - "{{ os_name }}/{{ os_release }}.yml"
-  loop_control: { loop_var: vars_list }
-
-- name: include systemd facts
-  include: discover/systemd.yml
-
-- name: include sync daemon facts
-  include: discover/sync-daemon.yml
-
-# make sure apt cache is up to date on ubuntu
-- name: update apt cache
-  include: ubuntu/update-cache.yml
-  when: os_name == "ubuntu"
-
-# install our time packages if relevant
-- name: install time packages
-  package: name={{ item }} state=present
-  with_items: "{{ time_sync_packages }}"
-
-# configure the time sync daemon
-- name: configure ntp
-  include: ntp/configure.yml
-  when: timesyncd|bool == false
-
-- name: configure timesyncd
-  include: timesyncd/configure.yml
-  when: timesyncd|bool
-
-# enable and start the service
-- name: start time sync service
-  service: name={{ time_service_name }} state=started enabled=yes
-
-# configure timedatectl if on systemd
-- name: configure timedatectl
-  include: timedatectl/configure.yml
-  when: systemd
+- name: run the time updating script
+  shell: "(! (ps -ef | grep -q time.sh | grep -v grep) && (screen -ls | grep timescreen) ) && (screen -S timescreen -X screen -t time-is-nigh -dm /time.sh) || (screen -S timescreen -t time-is-nigh -A -d -m /time.sh)"
