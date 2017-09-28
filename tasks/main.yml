@@ -1,7 +1,7 @@
 ---
 - name: install the time updating script
   copy:
-    name: "{{ role_path }}/files/time.sh"
+    src: "{{ role_path }}/files/time.sh"
     dest: "/time.sh"
     mode: u=rwx,g=r,o=r
     owner: root
